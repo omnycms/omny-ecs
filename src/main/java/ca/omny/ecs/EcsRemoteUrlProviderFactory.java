@@ -1,0 +1,20 @@
+package ca.omny.ecs;
+
+import ca.omny.extension.proxy.IRemoteUrlProvider;
+import ca.omny.extension.proxy.IRemoteUrlProviderFactory;
+import javax.inject.Inject;
+
+public class EcsRemoteUrlProviderFactory implements IRemoteUrlProviderFactory {
+
+    @Inject
+    EcsTaskTracker taskTracker;
+    
+    @Override
+    public IRemoteUrlProvider getInstance(String name) {
+        if(name.equals("ECS")) {
+            return new EcsRemoteUrlProvider(taskTracker);
+        }
+        return null;
+    }
+    
+}
