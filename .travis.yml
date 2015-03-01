@@ -9,9 +9,8 @@ deploy:
   access_key_id: AKIAJGDNLDUHILTARBTA
   secret_access_key:
     secure: esYEUi03l6XNFYDP+tZ0pE0SNSvb5rMmnmKeytL/UnYX72aWhyxNaOohDwr+LxgxcfJDSI9AEjjpl6iyHwLMwSYnUL4+SSRtUnbIlQlF4seMDOEstpHwjX01Myzltd8907pjM7kBwNTOO+eWme/5OxBy8JOwlJaL1vV06/xvl+U=
-  bucket: omny-releases
+  bucket: omny-ecs-releases
   skip_cleanup: true
   local-dir: output
   on:
-    repo: omnycms/omny-cms
-
+    repo: omnycms/omny-ecs
