@@ -1,9 +1,9 @@
 language: java
 jdk:
-- openjdk7
+  - openjdk7
 script:
-- ./build-omny.sh
-- ./bundle.sh $TRAVIS_BUILD_NUMBER
+  - ./build-omny.sh
+  - ./bundle.sh $TRAVIS_BUILD_NUMBER
 deploy:
   provider: s3
   access_key_id: AKIAJGDNLDUHILTARBTA
