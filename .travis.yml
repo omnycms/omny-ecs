@@ -1,8 +1,9 @@
 language: java
 jdk:
 - openjdk7
-script:
+install:
 - ./build-travis.sh
+script:
 - ./bundle.sh $TRAVIS_BUILD_NUMBER
 deploy:
   provider: s3
