@@ -8,9 +8,9 @@ script:
 - ./bundle.sh $TRAVIS_BUILD_NUMBER
 deploy:
   provider: s3
-  access_key_id: AKIAJGDNLDUHILTARBTA
+  access_key_id: AKIAJPII7N6DVIOXPQAQ
   secret_access_key:
-    secure: esYEUi03l6XNFYDP+tZ0pE0SNSvb5rMmnmKeytL/UnYX72aWhyxNaOohDwr+LxgxcfJDSI9AEjjpl6iyHwLMwSYnUL4+SSRtUnbIlQlF4seMDOEstpHwjX01Myzltd8907pjM7kBwNTOO+eWme/5OxBy8JOwlJaL1vV06/xvl+U=
+    secure: iBGd+USVrrMzZdBh3jTp4GCEL7E4gKkd56Gkhsz2AUgal6gMROBmi3f6q9Vcr3ogM33WVRkjN63LKfVocdj5iTYAt64cgTwPNoPbCu0VTRVK4DKYScRbSRiN2YgUrGiiKCHqB0J/7aw8LGunF691s5fOAeVUm6XIhY2gT+9j5XA=
   bucket: omny-ecs-releases
   skip_cleanup: true
   local-dir: output
