@@ -15,6 +15,9 @@ public class EcsRemoteUrlProvider implements IRemoteUrlProvider {
     @Inject
     EcsTaskTracker taskTracker;
     
+    @Inject
+    EcsVersionMapper mapper;
+    
     public EcsRemoteUrlProvider(EcsTaskTracker taskTracker) {
         this.taskTracker = taskTracker;
     }
@@ -23,11 +26,12 @@ public class EcsRemoteUrlProvider implements IRemoteUrlProvider {
     public String getRemoteUrl(String route, HttpServletRequest req) {
         String cluster = System.getenv("OMNY_ECS_CLUSTER");
         String[] routeParts = route.split("/");
-        String family = routeParts[0];
+        String api = routeParts[0];
         if(routeParts[1].equals("api")) {
-            family = routeParts[3];
+            api = routeParts[3];
         }
-        String version = "7";
+        String family = mapper.getFamily(api);
+        String version = mapper.getCurrentVersion(family);
         Map<String, List<Integer>> hostPortMapping = taskTracker.getHostPortMapping(family, version);
         Set<String> keySet = hostPortMapping.keySet();
         Random r = new Random();

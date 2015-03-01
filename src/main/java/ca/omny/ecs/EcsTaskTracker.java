@@ -94,9 +94,6 @@ public class EcsTaskTracker {
             for(Reservation reservation: reservations) {
                 for(Instance instance: reservation.getInstances()) {
                     String privateIpAddress = instance.getPrivateIpAddress();
-
-                    //List<Integer> ports = containerInstanceArnPortMapping.get(ec2IdToContainerArn.get(instance.getInstanceId()));
-                    //hostPortMapping.put(privateIpAddress, ports);
                     ec2InstanceIpMapping.put(instance.getInstanceId(), privateIpAddress);
                 }
             }
