@@ -18,6 +18,9 @@ public class EcsVersionMapper {
     }
     
     public String getFamily(String api) {
+        if(api==null||api.isEmpty()) {
+            api = "default";
+        }
         if(familyMap.containsKey(api)) {
             return familyMap.get(api);
         }
