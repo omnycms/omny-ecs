@@ -17,9 +17,10 @@ public class EcsRemoteUrlProvider implements IRemoteUrlProvider {
     
     @Inject
     EcsVersionMapper mapper;
-    
-    public EcsRemoteUrlProvider(EcsTaskTracker taskTracker) {
+
+    public EcsRemoteUrlProvider(EcsTaskTracker taskTracker, EcsVersionMapper mapper) {
         this.taskTracker = taskTracker;
+        this.mapper = mapper;
     }
     
     @Override
