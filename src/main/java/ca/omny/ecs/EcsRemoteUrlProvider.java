@@ -42,7 +42,7 @@ public class EcsRemoteUrlProvider implements IRemoteUrlProvider {
             if(count==pos) {
                 List<Integer> ports = hostPortMapping.get(key);
                 int port = ports.get(r.nextInt(ports.size()));
-                return "http://"+key+":"+port+route;
+                return "http://"+key+":"+port+route+"?"+req.getQueryString();
             }
             count++;
         }
