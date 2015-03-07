@@ -102,6 +102,9 @@ public class EcsTaskTracker {
 
     private void describeMissingTasks(List<String> taskArns, String cluster, String taskDefinitionArn) {
         Collection<String> missingTasks = this.getMissingTasks(taskArns);
+        if(missingTasks.isEmpty()) {
+            return;
+        }
         DescribeTasksRequest r = new DescribeTasksRequest()
                 .withCluster(cluster)
                 .withTasks(missingTasks);
