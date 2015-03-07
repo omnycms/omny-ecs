@@ -27,9 +27,12 @@ public class EcsRemoteUrlProvider implements IRemoteUrlProvider {
     public String getRemoteUrl(String route, HttpServletRequest req) {
         String cluster = System.getenv("OMNY_ECS_CLUSTER");
         String[] routeParts = route.split("/");
-        String api = routeParts[0];
-        if(routeParts[1].equals("api")) {
-            api = routeParts[3];
+        String api = "";
+        if(routeParts.length>0) {
+            api = routeParts[0];
+            if(routeParts[1].equals("api")) {
+                api = routeParts[3];
+            }
         }
         String family = mapper.getFamily(api);
         String version = mapper.getCurrentVersion(family);
