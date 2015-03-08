@@ -53,7 +53,8 @@ public class EcsTaskTracker {
         knownContainers = new HashSet<>();
         containerInstanceArnPortMapping = new HashMap<>();
         containerInstanceArnEc2Mapping = new HashMap<>();
-        taskToContainerInstanceMapping = new HashMap<>();        
+        taskToContainerInstanceMapping = new HashMap<>();    
+        taskPortMapping = new HashMap<>();
     }
 
     public Map<String, List<Integer>> getHostPortMapping(String family, String version) {
