@@ -67,7 +67,7 @@ public class EcsTaskTracker {
                 .withCluster(cluster)
                 .withFamily(family));
         List<String> taskArns = listTasks.getTaskArns();
-
+        System.out.println("using tasks "+taskArns);
         this.describeMissingTasks(taskArns, cluster, taskDefinitionArn);
 
         Set<String> containerInstanceArns = knownContainerInstances;
@@ -163,11 +163,13 @@ public class EcsTaskTracker {
     }
 
     private void addInstancesToMapping(Map<String, List<Integer>> hostPortMapping, Collection<String> tasksArns) {
+        System.out.println("registering tasks "+tasksArns);
         for (String taskArn : tasksArns) {
             String containerInstanceArn = taskToContainerInstanceMapping.get(taskArn);
             String ec2Id = containerInstanceArnEc2Mapping.get(containerInstanceArn);
             String privateIpAddress = ec2InstanceIpMapping.get(ec2Id);
             List<Integer> ports = taskPortMapping.get(taskArn);
+            System.out.println(containerInstanceArn+" "+privateIpAddress+" "+ports);
             hostPortMapping.put(privateIpAddress, ports);
         }
     }
