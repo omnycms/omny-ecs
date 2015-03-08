@@ -47,6 +47,7 @@ public class EcsRemoteUrlProvider implements IRemoteUrlProvider {
                 int port = ports.get(r.nextInt(ports.size()));
                 String url = "http://"+key+":"+port+route+"?"+req.getQueryString();
                 System.out.println("viewing url: "+url);
+                return url;
             }
             count++;
         }
