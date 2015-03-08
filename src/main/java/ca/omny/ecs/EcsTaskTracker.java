@@ -34,24 +34,26 @@ public class EcsTaskTracker {
     Map<String, String> ec2InstanceIpMapping;
     Map<String, String> ec2IdToContainerArn;
     Set<String> knownContainers;
-    Map<String, List<String>> taskDefinitionToContainerInstanceArnMapping;
+    
     Map<String, List<Integer>> containerInstanceArnPortMapping;
     Map<String, String> containerInstanceArnEc2Mapping;
-    Map<String, List<String>> taskToContainerInstanceMapping;
-
+    Map<String, String> taskToContainerInstanceMapping;
+    
+    Map<String, List<Integer>> taskPortMapping;
+    
     Map<String, String> familyAndVersionToTaskDefinitionArnMap;
 
     public EcsTaskTracker() {
         ecsClient = new AmazonECSClient();
         ec2Client = new AmazonEC2Client();
         familyAndVersionToTaskDefinitionArnMap = new HashMap<>();
+        
         ec2InstanceIpMapping = new HashMap<>();
         ec2IdToContainerArn = new HashMap<>();
         knownContainers = new HashSet<>();
         containerInstanceArnPortMapping = new HashMap<>();
         containerInstanceArnEc2Mapping = new HashMap<>();
-        taskToContainerInstanceMapping = new HashMap<>();
-        taskDefinitionToContainerInstanceArnMapping = new HashMap<>();
+        taskToContainerInstanceMapping = new HashMap<>();        
     }
 
     public Map<String, List<Integer>> getHostPortMapping(String family, String version) {
@@ -91,7 +93,7 @@ public class EcsTaskTracker {
             }
         }
 
-        addInstancesToMapping(hostPortMapping, taskDefinitionArn);
+        addInstancesToMapping(hostPortMapping, taskArns);
         return hostPortMapping;
     }
 
@@ -118,20 +120,17 @@ public class EcsTaskTracker {
 
         for (Task task : tasksResult.getTasks()) {
             if (task.getTaskDefinitionArn().equals(taskDefinitionArn)) {
-                List<String> taskContainers = new LinkedList<>();
-                taskToContainerInstanceMapping.put(task.getTaskArn(), taskContainers);
-                taskDefinitionToContainerInstanceArnMapping.put(taskDefinitionArn, taskContainers);
+                taskToContainerInstanceMapping.put(task.getTaskArn(), task.getContainerInstanceArn());
                 for (Container container : task.getContainers()) {
-                    taskContainers.add(container.getContainerArn());
                     for (NetworkBinding binding : container.getNetworkBindings()) {
                         if (binding.getContainerPort() == 8080 || binding.getContainerPort() == 80) {
 
                             int hostPort = binding.getHostPort();
                             String containerInstanceArn = task.getContainerInstanceArn();
-                            if (!containerInstanceArnPortMapping.containsKey(containerInstanceArn)) {
-                                containerInstanceArnPortMapping.put(containerInstanceArn, new LinkedList<Integer>());
+                            if (!taskPortMapping.containsKey(containerInstanceArn)) {
+                                taskPortMapping.put(containerInstanceArn, new LinkedList<Integer>());
                             }
-                            List<Integer> ports = containerInstanceArnPortMapping.get(containerInstanceArn);
+                            List<Integer> ports = taskPortMapping.get(containerInstanceArn);
                             ports.add(hostPort);
                         }
                     }
@@ -160,12 +159,12 @@ public class EcsTaskTracker {
         return instanceIds;
     }
 
-    private void addInstancesToMapping(Map<String, List<Integer>> hostPortMapping, String taskDefinitionArn) {
-        List<String> containerInstanceArns = taskDefinitionToContainerInstanceArnMapping.get(taskDefinitionArn);
-        for (String containerInstanceArn : containerInstanceArns) {
+    private void addInstancesToMapping(Map<String, List<Integer>> hostPortMapping, Collection<String> tasksArns) {
+        for (String taskArn : tasksArns) {
+            String containerInstanceArn = taskToContainerInstanceMapping.get(taskArn);
             String ec2Id = containerInstanceArnEc2Mapping.get(containerInstanceArn);
             String privateIpAddress = ec2InstanceIpMapping.get(ec2Id);
-            List<Integer> ports = containerInstanceArnPortMapping.get(containerInstanceArn);
+            List<Integer> ports = taskPortMapping.get(this);
             hostPortMapping.put(privateIpAddress, ports);
         }
     }
