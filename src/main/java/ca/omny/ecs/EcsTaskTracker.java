@@ -73,6 +73,7 @@ public class EcsTaskTracker {
         taskToContainerInstanceMapping = new HashMap<>();
         taskPortMapping = new HashMap<>();
         taskToTaskDefinitionMapping = new HashMap<>();
+        familyToTaskArnCache = new HashMap<>();
         scheduler = Executors.newScheduledThreadPool(1);
         final ScheduledFuture<?> beeperHandle = scheduler.scheduleAtFixedRate(updateFamilyArnCache, 10, 20, SECONDS);
     }
