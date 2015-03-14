@@ -25,6 +25,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class EcsTaskTracker {
 
@@ -43,7 +47,19 @@ public class EcsTaskTracker {
     Map<String, List<Integer>> taskPortMapping;
 
     Map<String, String> familyAndVersionToTaskDefinitionArnMap;
-
+    Map<String, List<String>> familyToTaskArnCache;
+    
+    private final ScheduledExecutorService scheduler;
+    
+    final Runnable updateFamilyArnCache = new Runnable() {
+        public void run() { 
+            for(String key: familyToTaskArnCache.keySet()) {
+                String[] parts = key.split(":");
+                familyToTaskArnCache.put(key, listTasks(parts[0], parts[1]));
+            }
+        }
+    };
+    
     public EcsTaskTracker() {
         ecsClient = new AmazonECSClient();
         ec2Client = new AmazonEC2Client();
@@ -57,6 +73,8 @@ public class EcsTaskTracker {
         taskToContainerInstanceMapping = new HashMap<>();
         taskPortMapping = new HashMap<>();
         taskToTaskDefinitionMapping = new HashMap<>();
+        scheduler = Executors.newScheduledThreadPool(1);
+        final ScheduledFuture<?> beeperHandle = scheduler.scheduleAtFixedRate(updateFamilyArnCache, 10, 20, SECONDS);
     }
 
     public Map<String, List<Integer>> getHostPortMapping(String family, String version) {
@@ -65,10 +83,7 @@ public class EcsTaskTracker {
 
         String taskDefinitionArn = getTaskDefinitionArn(family, version);
 
-        ListTasksResult listTasks = ecsClient.listTasks(new ListTasksRequest()
-                .withCluster(cluster)
-                .withFamily(family));
-        List<String> taskArns = listTasks.getTaskArns();
+        List<String> taskArns = this.getTasks(cluster, family);
         System.out.println("using tasks " + taskArns);
         this.describeMissingTasks(taskArns, cluster, taskDefinitionArn);
 
@@ -98,6 +113,24 @@ public class EcsTaskTracker {
 
         addInstancesToMapping(hostPortMapping, taskArns, taskDefinitionArn);
         return hostPortMapping;
+    }
+    
+    private List<String> getTasks(String cluster, String family) {
+        String key = cluster+":"+family;
+        if(familyToTaskArnCache.containsKey(key)) {
+            return familyToTaskArnCache.get(key);
+        }
+        List<String> listTasks = listTasks(cluster, family);
+        familyToTaskArnCache.put(key, listTasks);
+        return listTasks;
+    }
+    
+    private List<String> listTasks(String cluster, String family) {
+        ListTasksResult listTasks = ecsClient.listTasks(new ListTasksRequest()
+                .withCluster(cluster)
+                .withFamily(family));
+        List<String> taskArns = listTasks.getTaskArns();
+        return taskArns;
     }
 
     private Collection<String> getMissingTasks(List<String> taskArns) {
