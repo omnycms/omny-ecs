@@ -1,24 +1,25 @@
 package ca.omny.ecs;
 
+import ca.omny.configuration.ConfigurationReader;
 import ca.omny.potent.PowerServlet;
-import java.util.List;
-import java.util.Map;
+import ca.omny.server.OmnyClassRegister;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Weld weld = new Weld();
-        WeldContainer container = weld.initialize();
+
         int edgeRouterPort = 8080;
+        ConfigurationReader configurationReader = ConfigurationReader.getDefaultConfigurationReader();
+        configurationReader.setKey("OMNY_NO_INJECTION", "true");
+        configurationReader.setKey("OMNY_LOAD_CLASSES", "[\"ca.omny.db.extended.ExtendedDatabaseFactory\",\"ca.omny.potent.RegisterApis\",\"ca.omny.ecs.RegisterProviders\"]");
+        new OmnyClassRegister().loadFromEnvironment();
         if(System.getenv("omny_edge_port")!=null) {
             edgeRouterPort = Integer.parseInt(System.getenv("omny_edge_port"));
         }
         Server edgeServer = new Server(edgeRouterPort);
-        PowerServlet edgeServlet = container.instance().select(PowerServlet.class).get();
+        PowerServlet edgeServlet = new PowerServlet();
         
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
         context.setContextPath("/");

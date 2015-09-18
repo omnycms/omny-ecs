@@ -1,21 +1,18 @@
 package ca.omny.ecs;
 
+import ca.omny.documentdb.IDocumentQuerier;
+import ca.omny.documentdb.QuerierFactory;
 import ca.omny.extension.proxy.IRemoteUrlProvider;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
-import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
 
-@Alternative
 public class EcsRemoteUrlProvider implements IRemoteUrlProvider {
 
-    @Inject
     EcsTaskTracker taskTracker;
     
-    @Inject
     EcsVersionMapper mapper;
 
     public EcsRemoteUrlProvider(EcsTaskTracker taskTracker, EcsVersionMapper mapper) {
@@ -34,8 +31,9 @@ public class EcsRemoteUrlProvider implements IRemoteUrlProvider {
                 api = routeParts[3];
             }
         }
-        String family = mapper.getFamily(api);
-        String version = mapper.getCurrentVersion(family);
+        IDocumentQuerier querier = QuerierFactory.getDefaultQuerier();
+        String family = mapper.getFamily(api,querier);
+        String version = mapper.getCurrentVersion(family,querier);
         Map<String, List<Integer>> hostPortMapping = taskTracker.getHostPortMapping(family, version);
         Set<String> keySet = hostPortMapping.keySet();
         Random r = new Random();

@@ -3,21 +3,17 @@ package ca.omny.ecs;
 import ca.omny.documentdb.IDocumentQuerier;
 import java.util.HashMap;
 import java.util.Map;
-import javax.inject.Inject;
 
 public class EcsVersionMapper {
     
-    @Inject
-    IDocumentQuerier querier;
-    
     Map<String,String> familyMap = new HashMap<>();
     
-    public String getCurrentVersion(String family) {
+    public String getCurrentVersion(String family, IDocumentQuerier querier) {
         String key = querier.getKey("services",family,"current");
         return querier.get(key, Map.class).get("version").toString();
     }
     
-    public String getFamily(String api) {
+    public String getFamily(String api, IDocumentQuerier querier) {
         if(api==null||api.isEmpty()) {
             api = "default";
         }
