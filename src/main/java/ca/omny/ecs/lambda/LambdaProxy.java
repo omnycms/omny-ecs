@@ -6,7 +6,6 @@ import ca.omny.documentdb.QuerierFactory;
 import ca.omny.extension.proxy.IOmnyProxyService;
 import ca.omny.lambda.wrapper.models.FakeHttpResponse;
 import ca.omny.lambda.wrapper.models.LambdaInput;
-import ca.omny.lambda.wrapper.models.LambdaOutput;
 import ca.omny.potent.HeaderManager;
 import com.amazonaws.services.lambda.AWSLambdaClient;
 import com.amazonaws.services.lambda.model.InvokeRequest;

@@ -15,8 +15,8 @@ public class Main {
         configurationReader.setKey("OMNY_NO_INJECTION", "true");
         configurationReader.setKey("OMNY_LOAD_CLASSES", "[\"ca.omny.db.extended.ExtendedDatabaseFactory\",\"ca.omny.potent.RegisterApis\",\"ca.omny.ecs.RegisterProviders\"]");
         new OmnyClassRegister().loadFromEnvironment();
-        if(System.getenv("omny_edge_port")!=null) {
-            edgeRouterPort = Integer.parseInt(System.getenv("omny_edge_port"));
+        if(System.getenv("OMNY_EDGE_PORT")!=null) {
+            edgeRouterPort = Integer.parseInt(System.getenv("OMNY_EDGE_PORT"));
         }
         Server edgeServer = new Server(edgeRouterPort);
         PowerServlet edgeServlet = new PowerServlet();
